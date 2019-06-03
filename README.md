@@ -178,3 +178,5 @@ $ ./gradlew clean test
    BUILD SUCCESSFUL in 5s
    6 actionable tasks: 6 executed
 ```
+
+The better fix I've done in the past is to manually start up the server in the `specSetup()` which allows Spring to fully start before the tests to start. In the interest of time, I decided to no re-discover that trick, and just make the note here.
