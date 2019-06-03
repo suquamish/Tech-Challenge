@@ -95,7 +95,7 @@ You can delete an existing user via `.../id/{user id uuid}/delete`
 ```
 
 #### Deleting data
-`curl =v -H 'Accept: application/json' http://localhost:8080/users/id/30532965-6f5b-4aaa-aad1-bbcc9db4c2a5/delete`
+`curl -v -H 'Accept: application/json' http://localhost:8080/users/id/30532965-6f5b-4aaa-aad1-bbcc9db4c2a5/delete`
 ```bash
 *   Trying 127.0.0.1...
 * Connected to localhost (127.0.0.1) port 8080 (#0)
