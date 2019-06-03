@@ -143,4 +143,25 @@ class MemoryStorageUnitTest extends Specification {
         assert resultsBefore.first().value == "frothy@example.com"
         assert resultsAfter.first().value == "bubbly@example.com"
     }
+
+    def "allows me to delete all data with a matching groupId"() {
+        given:
+        def groupIdToDelete = UUID.randomUUID().toString();
+        def groupIdToKeep = UUID.randomUUID().toString();
+        subject.put("name", "Joey McJoe", groupIdToKeep)
+        subject.put("email", "frothy@example.com", groupIdToKeep)
+        subject.put("username", "McJ!", groupIdToKeep)
+        subject.put("name", "Abra Cadabra", groupIdToDelete)
+        subject.put("email", "mystic@example.com", groupIdToDelete)
+        subject.put("username", "alakazam", groupIdToDelete)
+        assert subject.getStore().size() == 6
+
+        when:
+        subject.deleteByGroupId(groupIdToDelete)
+
+        then:
+        assert subject.getStore().size() == 3
+        assert subject.getStore().findAll { e -> e.getKey().split("/")[0] == groupIdToKeep }.size() == 3
+
+    }
 }
