@@ -166,6 +166,8 @@ trying to create a new user with an already existing username
 
 ### Caveats
 
+I opted for in memory *persistence* option, so each time you restart the service, you've got a clean slate.
+
 The server retains it's default port of 8080 to bind to. If you've got something else running on that port you'll need change the server port by setting a server.port property:
 
 `java -jar -Dserver.port=8081 build/libs/WSECUTechChallenge-0.0.1.jar`
