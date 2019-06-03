@@ -2,8 +2,10 @@ package org.dieterich.WSECUTechChallenge
 
 import groovy.json.JsonSlurper
 import org.springframework.boot.test.context.SpringBootTest
+import spock.lang.Ignore
 import spock.lang.Specification
 
+@Ignore
 @SpringBootTest
 class UserControllerIntegrationTest extends Specification {
     URL client
