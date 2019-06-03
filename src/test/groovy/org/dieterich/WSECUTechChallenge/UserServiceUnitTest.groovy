@@ -126,6 +126,15 @@ class UserServiceUnitTest extends Specification {
         1 * mockMemoryStorage.deleteByGroupId(userGroupId)
     }
 
+    def "deleteUserById does nothing if you pass in nothing"() {
+        when:
+        subject.deleteUserById(null)
+        subject.deleteUserById("")
+
+        then:
+        0 * mockMemoryStorage.deleteByGroupId(_)
+    }
+
     def "deleteUserById does not care if a user exists"() {
         when:
         subject.deleteUserById("really-does-not-matter")
@@ -133,5 +142,17 @@ class UserServiceUnitTest extends Specification {
         then:
         1 * mockMemoryStorage.deleteByGroupId("really-does-not-matter")
         noExceptionThrown()
+    }
+
+    def "updateUser throws NothingFoundException if you try to update a user that does not exist"() {
+        given:
+        def userId = UUID.randomUUID().toString()
+
+        when:
+        subject.updateUser(new User(id: userId))
+
+        then:
+        1 * mockMemoryStorage.getByGroupId(userId) >> new ArrayList<MemoryStorageModel>()
+        thrown(NothingFoundException)
     }
 }

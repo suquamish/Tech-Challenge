@@ -40,7 +40,7 @@ public class UserService {
         return result;
     }
 
-    private boolean isDuplicateUsername(String username) {
+    private boolean userExists(String username) {
         List<MemoryStorageModel> otherUsers = dataStorage.getByKeyValue(USERNAME_KEY, username);
         return otherUsers.size() > 0;
     }
@@ -49,17 +49,16 @@ public class UserService {
         return UUID.randomUUID().toString();
     }
 
-    public User getUserByGroupId(String groupId) {
-        User result = new User();
+    public User getUserByGroupId(String groupId) throws NothingFoundException {
         List<MemoryStorageModel> userInfo = dataStorage.getByGroupId(groupId);
         if(userInfo.size() > 0) {
-            result = userFromMemoryModel(userInfo);
+            return userFromMemoryModel(userInfo);
         }
-        return result;
+        throw(new NothingFoundException(String.format("no user with id \"%s\"", groupId)));
     }
 
     public User getUserByUsername(String username) throws NothingFoundException {
-        User result = new User();
+        User result;
         List<MemoryStorageModel> data = dataStorage.getByKeyValue(USERNAME_KEY, username);
         if(data.isEmpty()) throw new NothingFoundException("${username} does not exist");
         data = dataStorage.getByGroupId(data.get(0).getGroupId());
@@ -69,7 +68,7 @@ public class UserService {
 
     public User createUser(String username, String name, String email) throws DuplicateUserException {
         User result = new User();
-        if (isDuplicateUsername(username)) throw new DuplicateUserException("${username} already exists");
+        if (userExists(username)) throw new DuplicateUserException("${username} already exists");
         result.setId(generateUserId());
         dataStorage.put(USERNAME_KEY, username, result.getId());
         result.setUsername(username);
@@ -81,7 +80,15 @@ public class UserService {
     }
 
     public void deleteUserById(String id) {
+        if (id == null || id.isEmpty()) return;
+
         dataStorage.deleteByGroupId(id);
     }
 
+    public void updateUser(User user) throws NothingFoundException {
+        getUserByGroupId(user.getId());
+//        dataStorage.put(USERNAME_KEY, user.getUsername(), user.getId());
+//        dataStorage.put(EMAIL_KEY, user.getEmail(), user.getId());
+//        dataStorage.put(NAME_KEY, user.getName(), user.getId());
+    }
 }
