@@ -20,8 +20,8 @@ class UserControllerIntegrationTest extends Specification {
 
 
         expect:
-        assert '{"statusString":"Not Found","errorMessage":"Cannot find any matching user"}' == connection.errorStream.getText()
         assert 404 == connection.getResponseCode()
+        assert '{"statusString":"Not Found","errorMessage":"Cannot find any matching user"}' == connection.errorStream.getText()
     }
 
     def "I can create a user"() {
@@ -90,7 +90,7 @@ class UserControllerIntegrationTest extends Specification {
         def updateJson = '{"id":"' + userData.id + '","name":"Just A. User","email":"different.email@example.com","username":"w00t"}'
 
         when:
-        client = new URL("http://localhost:8080/users/update-existing")
+        client = new URL("http://localhost:8080/users/id/${userData.id}/update")
         connection = client.openConnection()
         connection.doOutput = true
         connection.setRequestMethod("POST")

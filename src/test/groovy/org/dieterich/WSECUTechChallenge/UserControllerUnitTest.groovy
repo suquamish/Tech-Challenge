@@ -126,4 +126,15 @@ class UserControllerUnitTest extends Specification {
         1 * mockUserService.getUserById(userData.id) >> userData
         userMatches(resultCreate, userData)
     }
+
+    def "allows me to delete an existing user"() {
+        given:
+        def userId = UUID.randomUUID().toString()
+
+        when:
+        subject.deleteUser(userId)
+
+        then:
+        1 * mockUserService.deleteUserById(userId)
+    }
 }

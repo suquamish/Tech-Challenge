@@ -63,9 +63,11 @@ You can create new users via `.../create-new`
 
 To create a new user, you need to `POST` a user model in JSON format with the `name`, `username`, and `email` attributes.
 
-You can update existing users via `.../update-existing`
+You can update existing users via `.../id/30532965-6f5b-4aaa-aad1-bbcc9db4c2a5/update`
 
 To update an existing user, you need to `POST` a fully populated user model in JSON format, including the `id`.
+
+You can delete an existing user via `.../`
 
 ### Request Examples
 
@@ -81,7 +83,7 @@ To update an existing user, you need to `POST` a fully populated user model in J
 ```
 
 #### Update an existing user
-`curl -X POST -H 'Content-Type: application/json' -d '{"username": "thom.dieterich", "email": "thom@example.com", "name": "Thom Dieterich","id":"30532965-6f5b-4aaa-aad1-bbcc9db4c2a5"}' http://localhost:8080/users/update-existing`
+`curl -X POST -H 'Content-Type: application/json' -d '{"username": "thom.dieterich", "email": "thom@example.com", "name": "Thom Dieterich","id":"30532965-6f5b-4aaa-aad1-bbcc9db4c2a5"}' http://localhost:8080/users/id/30532965-6f5b-4aaa-aad1-bbcc9db4c2a5/update`
 ```json
 {"id":"30532965-6f5b-4aaa-aad1-bbcc9db4c2a5","username":"thom.dieterich","name":"Thom Dieterich","email":"thom@example.com"}
 ```
@@ -91,6 +93,9 @@ To update an existing user, you need to `POST` a fully populated user model in J
 ```json
 {"id":"30532965-6f5b-4aaa-aad1-bbcc9db4c2a5","username":"thom.dieterich","name":"Thom Dieterich","email":"thom@example.com"}
 ```
+
+#### Deleteing data
+
 #### Making a bad request
 
 trying to get a user with a bad id

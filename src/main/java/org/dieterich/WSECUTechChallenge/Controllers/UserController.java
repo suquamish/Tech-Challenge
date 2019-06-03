@@ -54,10 +54,15 @@ public class UserController {
         return userService.createUser(data.getUsername(), data.getName(), data.getEmail());
     }
 
-    @PostMapping("/update-existing")
+    @PostMapping("/id/{userId}/update")
     public User updateUser(@RequestBody User data) throws NothingFoundException {
         userService.updateUser(data);
         return userService.getUserById(data.getId());
+    }
+
+    @DeleteMapping("/id/{userId}/delete")
+    public void deleteUser(@PathVariable String userId) {
+        userService.deleteUserById(userId);
     }
 
     @ExceptionHandler(NothingFoundException.class)
