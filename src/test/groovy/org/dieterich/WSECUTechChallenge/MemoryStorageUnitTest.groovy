@@ -164,4 +164,22 @@ class MemoryStorageUnitTest extends Specification {
         assert subject.getStore().findAll { e -> e.getKey().split("/")[0] == groupIdToKeep }.size() == 3
 
     }
+
+    def "returns an empty list when nothing is found"() {
+        when:
+        List<MemoryStorageModel> resultGetByGroupId = subject.getByGroupId("humma")
+        List<MemoryStorageModel> resultGetByKey = subject.getByKey("yadda")
+        List<MemoryStorageModel> resultGetByValue = subject.getByValue("diddle")
+        List<MemoryStorageModel> resultGetByKeyValue = subject.getByKeyValue("blah", "etcetera")
+
+        then:
+        assert resultGetByGroupId instanceof List
+        assert resultGetByGroupId.size() == 0
+        assert resultGetByKey instanceof List
+        assert resultGetByKey.size() == 0
+        assert resultGetByValue instanceof List
+        assert resultGetByValue.size() == 0
+        assert resultGetByKeyValue instanceof List
+        assert resultGetByKeyValue.size() == 0
+    }
 }
