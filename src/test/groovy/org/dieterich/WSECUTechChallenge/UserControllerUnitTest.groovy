@@ -2,13 +2,10 @@ package org.dieterich.WSECUTechChallenge
 
 import org.dieterich.WSECUTechChallenge.Controllers.UserController
 import org.dieterich.WSECUTechChallenge.DataAccess.UserService
-import org.dieterich.WSECUTechChallenge.DataStorage.MemoryStorage
 import org.dieterich.WSECUTechChallenge.Exceptions.DuplicateUserException
 import org.dieterich.WSECUTechChallenge.Exceptions.NothingFoundException
 import org.dieterich.WSECUTechChallenge.Models.User
 import spock.lang.Specification
-
-import javax.servlet.http.HttpServletResponse
 
 class UserControllerUnitTest extends Specification {
     UserService mockUserService
@@ -119,12 +116,30 @@ class UserControllerUnitTest extends Specification {
         }
 
         when:
-        def resultCreate = subject.updateUser(userData)
+        def resultCreate = subject.updateUser(userData, userData.id)
 
         then:
         1 * mockUserService.updateUser(userData)
         1 * mockUserService.getUserById(userData.id) >> userData
         userMatches(resultCreate, userData)
+    }
+
+    def "updating a user does not allow me to change the id"() {
+        given:
+        def userData = new User( id: "uuid", email: "email", name: "name", username: "username")
+        def userMatches = { e, a ->
+            e.id == a.id &&
+                    e.username == a.username &&
+                    e.name == a.name &&
+                    e.email == a.email
+        }
+
+        when:
+        def resultCreate = subject.updateUser(userData, "does not exist")
+
+        then:
+        1 * mockUserService.updateUser(userData) >> { throw(new NothingFoundException("WHAM!")) }
+        thrown(NothingFoundException)
     }
 
     def "allows me to delete an existing user"() {

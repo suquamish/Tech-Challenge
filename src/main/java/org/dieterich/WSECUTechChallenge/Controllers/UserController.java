@@ -55,7 +55,8 @@ public class UserController {
     }
 
     @PostMapping("/id/{userId}/update")
-    public User updateUser(@RequestBody User data) throws NothingFoundException {
+    public User updateUser(@RequestBody User data, @PathVariable String userId) throws NothingFoundException {
+        if(data.getId() != userId) data.setId(userId);
         userService.updateUser(data);
         return userService.getUserById(data.getId());
     }
