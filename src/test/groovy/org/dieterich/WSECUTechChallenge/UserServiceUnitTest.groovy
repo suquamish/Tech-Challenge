@@ -34,6 +34,34 @@ class UserServiceUnitTest extends Specification {
         thrown(DuplicateUserException)
     }
 
+    def "createUser allows me to insert a user into the datastore"() {
+        given:
+        List<MemoryStorageModel> mockData = new ArrayList<>()
+        String userId
+        def storeUserId = { String id -> userId = id }
+
+        when:
+        def result = subject.createUser("newuser", "Newton User", "new.user@example.com")
+
+        then:
+        assert result instanceof User
+        1 * mockMemoryStorage.getByKeyValue("username", "newuser") >> new ArrayList<MemoryStorageModel>()
+        1 * mockMemoryStorage.put(
+                "username",
+                "newuser",
+                { String uuid ->
+                    storeUserId(uuid)
+                    assert UUID.fromString(uuid)
+                }
+        )
+        1 * mockMemoryStorage.put("email", "new.user@example.com", _)
+        1 * mockMemoryStorage.put("name", "Newton User", _)
+        assert result.id == userId
+        assert result.email == "new.user@example.com"
+        assert result.username == "newuser"
+        assert result.name == "Newton User"
+    }
+
     def "getUserByGroupID retrieves and existing user by id"() {
         given:
         String userGroupId = UUID.randomUUID().toString()
@@ -87,5 +115,23 @@ class UserServiceUnitTest extends Specification {
         thrown(NothingFoundException)
     }
 
-//    def "updateUser"
+    def "deleteUserById removes an existing user"() {
+        given:
+        String userGroupId = UUID.randomUUID().toString();
+
+        when:
+        subject.deleteUserById(userGroupId)
+
+        then:
+        1 * mockMemoryStorage.deleteByGroupId(userGroupId)
+    }
+
+    def "deleteUserById does not care if a user exists"() {
+        when:
+        subject.deleteUserById("really-does-not-matter")
+
+        then:
+        1 * mockMemoryStorage.deleteByGroupId("really-does-not-matter")
+        noExceptionThrown()
+    }
 }

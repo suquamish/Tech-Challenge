@@ -79,6 +79,8 @@ public class MemoryStorage {
     }
 
     public synchronized void deleteByGroupId(String groupId) {
+        if (groupId == null || groupId.isEmpty()) return;
+
         Object[] toRemove = store.
                 keySet().
                 stream().

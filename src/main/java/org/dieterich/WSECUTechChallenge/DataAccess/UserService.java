@@ -7,6 +7,7 @@ import org.dieterich.WSECUTechChallenge.Exceptions.NothingFoundException;
 import org.dieterich.WSECUTechChallenge.Models.User;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -39,6 +40,15 @@ public class UserService {
         return result;
     }
 
+    private boolean isDuplicateUsername(String username) {
+        List<MemoryStorageModel> otherUsers = dataStorage.getByKeyValue(USERNAME_KEY, username);
+        return otherUsers.size() > 0;
+    }
+
+    private String generateUserId() {
+        return UUID.randomUUID().toString();
+    }
+
     public User getUserByGroupId(String groupId) {
         User result = new User();
         List<MemoryStorageModel> userInfo = dataStorage.getByGroupId(groupId);
@@ -57,15 +67,21 @@ public class UserService {
         return result;
     }
 
-    private boolean isDuplicateUsername(String username) {
-        List<MemoryStorageModel> otherUsers = dataStorage.getByKeyValue(USERNAME_KEY, username);
-        return otherUsers.size() > 0;
-    }
-
     public User createUser(String username, String name, String email) throws DuplicateUserException {
         User result = new User();
         if (isDuplicateUsername(username)) throw new DuplicateUserException("${username} already exists");
+        result.setId(generateUserId());
+        dataStorage.put(USERNAME_KEY, username, result.getId());
+        result.setUsername(username);
+        dataStorage.put(EMAIL_KEY, email, result.getId());
+        result.setEmail(email);
+        dataStorage.put(NAME_KEY, name, result.getId());
+        result.setName(name);
         return result;
+    }
+
+    public void deleteUserById(String id) {
+        dataStorage.deleteByGroupId(id);
     }
 
 }

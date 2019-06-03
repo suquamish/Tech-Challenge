@@ -4,6 +4,8 @@ import org.dieterich.WSECUTechChallenge.DataStorage.MemoryStorage
 import org.dieterich.WSECUTechChallenge.DataStorage.MemoryStorageModel
 import spock.lang.Specification
 
+import java.util.concurrent.ConcurrentHashMap
+
 class MemoryStorageUnitTest extends Specification {
     MemoryStorage subject
 
@@ -162,7 +164,19 @@ class MemoryStorageUnitTest extends Specification {
         then:
         assert subject.getStore().size() == 3
         assert subject.getStore().findAll { e -> e.getKey().split("/")[0] == groupIdToKeep }.size() == 3
+    }
 
+    def "deleteByGroupId does basic validation"() {
+        given:
+        Map<String, String> mockStore = Mock(Map)
+        subject.setStore(mockStore)
+
+        when:
+        subject.deleteByGroupId(null)
+        subject.deleteByGroupId("")
+
+        then:
+        0 * mockStore._
     }
 
     def "returns an empty list when nothing is found"() {
