@@ -116,4 +116,46 @@ class UserControllerIntegrationTest extends Specification {
         assert checkUserData.email == "different.email@example.com"
         assert checkUserData.username == "w00t"
     }
+
+    def "I can delete a user"() {
+        setup:
+        client = new URL("http://localhost:8080/users/create-new")
+        connection = client.openConnection()
+        connection.doOutput = true
+        connection.setRequestMethod("POST")
+        connection.setRequestProperty("Content-Type", "application/json")
+        connection.outputStream.withPrintWriter { writer ->
+            writer.write('{"name":"Short Term User","email":"shorty@example.com","username":"byebye"}')
+        }
+        connection.connect()
+        def userData = new JsonSlurper().parseText(connection.inputStream.text)
+
+        when:
+        client = new URL("http://localhost:8080/users/id/${userData.id}/delete")
+        connection = client.openConnection()
+        connection.setRequestMethod("DELETE")
+        connection.connect()
+
+        then:
+        assert 200 == connection.getResponseCode()
+        assert connection.inputStream.text.isEmpty()
+
+        when: "I request that user id"
+        client = new URL("http://localhost:8080/users/id/${userData.id}")
+        connection = client.openConnection()
+        connection.setRequestMethod("GET")
+        connection.connect()
+
+        then: "I should get a 404"
+        assert 404 == connection.getResponseCode()
+
+        when: "I request that username"
+        client = new URL("http://localhost:8080/users/username/${userData.username}")
+        connection = client.openConnection()
+        connection.setRequestMethod("GET")
+        connection.connect()
+
+        then: "I should get a 404"
+        assert 404 == connection.getResponseCode()
+    }
 }

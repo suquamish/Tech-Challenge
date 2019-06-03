@@ -57,17 +57,17 @@ You can retrieve users by username `.../username/{username}` or id `.../id/{user
 
 ### Setting data
 
-Creating or Updating data is done via an HTTP `POST`
+Creating or Updating data is done via an HTTP `POST`. Deleting data is via an HTTP `DELETE`
 
 You can create new users via `.../create-new`
 
 To create a new user, you need to `POST` a user model in JSON format with the `name`, `username`, and `email` attributes.
 
-You can update existing users via `.../id/30532965-6f5b-4aaa-aad1-bbcc9db4c2a5/update`
+You can update existing users via `.../id/{user id uuid}/update`
 
 To update an existing user, you need to `POST` a fully populated user model in JSON format, including the `id`.
 
-You can delete an existing user via `.../`
+You can delete an existing user via `.../id/{user id uuid}/delete` 
 
 ### Request Examples
 
@@ -94,7 +94,23 @@ You can delete an existing user via `.../`
 {"id":"30532965-6f5b-4aaa-aad1-bbcc9db4c2a5","username":"thom.dieterich","name":"Thom Dieterich","email":"thom@example.com"}
 ```
 
-#### Deleteing data
+#### Deleting data
+`curl =v -H 'Accept: application/json' http://localhost:8080/users/id/30532965-6f5b-4aaa-aad1-bbcc9db4c2a5/delete`
+```bash
+*   Trying 127.0.0.1...
+* Connected to localhost (127.0.0.1) port 8080 (#0)
+> DELETE /users/id/afc25f07-2421-4f53-a210-2068646357b4/delete HTTP/1.1
+> Host: localhost:8080
+> User-Agent: curl/7.47.0
+> Accept: */*
+> Content-Type: application/json
+> 
+< HTTP/1.1 200 
+< Content-Length: 0
+< Date: Mon, 03 Jun 2019 20:37:04 GMT
+< 
+* Connection #0 to host localhost left intact
+```
 
 #### Making a bad request
 
