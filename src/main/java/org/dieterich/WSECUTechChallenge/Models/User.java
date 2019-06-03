@@ -1,12 +1,22 @@
 package org.dieterich.WSECUTechChallenge.Models;
 
 public class User {
+    private String id;
     private String username;
     private String name;
     private String email;
 
+    public String getId() {
+        return id;
+    }
+
     public User setUsername(String username) {
         this.username = username;
+        return this;
+    }
+
+    public User setId(String id) {
+        this.id = id;
         return this;
     }
 

@@ -12,21 +12,18 @@ import java.util.List;
 public class UserService {
     private MemoryStorage dataStorage;
 
-    public final String USERNAME_KEY = "username";
-    public final String EMAIL_KEY = "email";
-    public final String NAME_KEY = "name";
+    private final String USERNAME_KEY = "username";
+    private final String EMAIL_KEY = "email";
+    private final String NAME_KEY = "name";
 
     public UserService() {
          dataStorage = MemoryStorage.getInstance();
     }
 
-    private boolean usernameMatch(String username, MemoryStorageModel userData) {
-        return userData.getKey().toLowerCase().equals(USERNAME_KEY) && userData.getValue().equals(username);
-    }
-
     private User userFromMemoryModel(List<MemoryStorageModel> userInfo) {
         User result = new User();
         for(MemoryStorageModel userData : userInfo) {
+            result.setId(userData.getGroupId());
             switch (userData.getKey().toLowerCase()) {
                 case USERNAME_KEY:
                     result.setUsername(userData.getValue());
@@ -55,18 +52,19 @@ public class UserService {
         User result = new User();
         List<MemoryStorageModel> data = dataStorage.getByKeyValue(USERNAME_KEY, username);
         if(data.isEmpty()) throw new NothingFoundException("${username} does not exist");
-        for (MemoryStorageModel userData: data) {
-            if (usernameMatch(username, userData)) {
-                result = getUserByGroupId(userData.getGroupId());
-            }
-        }
+        data = dataStorage.getByGroupId(data.get(0).getGroupId());
+        result = userFromMemoryModel(data);
         return result;
+    }
+
+    private boolean isDuplicateUsername(String username) {
+        List<MemoryStorageModel> otherUsers = dataStorage.getByKeyValue(USERNAME_KEY, username);
+        return otherUsers.size() > 0;
     }
 
     public User createUser(String username, String name, String email) throws DuplicateUserException {
         User result = new User();
-        List<MemoryStorageModel> otherUsers = dataStorage.getByKeyValue(USERNAME_KEY, username);
-        if(otherUsers.size() > 0) throw new DuplicateUserException("${username} already exists");
+        if (isDuplicateUsername(username)) throw new DuplicateUserException("${username} already exists");
         return result;
     }
 

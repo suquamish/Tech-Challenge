@@ -34,7 +34,7 @@ class UserServiceUnitTest extends Specification {
         thrown(DuplicateUserException)
     }
 
-    def "getUserByGroupID retrieves and existing user"() {
+    def "getUserByGroupID retrieves and existing user by id"() {
         given:
         String userGroupId = UUID.randomUUID().toString()
         List<MemoryStorageModel> mockData = new ArrayList<>();
@@ -47,17 +47,18 @@ class UserServiceUnitTest extends Specification {
 
         then:
         1 * mockMemoryStorage.getByGroupId(userGroupId) >> mockData
+        assert result.id == userGroupId
         assert result.email == "iamauser@example.com"
         assert result.name == "Iam A. User"
         assert result.username == "iamauser"
     }
 
-    def "getUserByUserName retrieves and existing user"() {
+    def "getUserByUserName retrieves an existing user by username"() {
         given:
         String userGroupId = UUID.randomUUID().toString();
         List<MemoryStorageModel> keyValueData = new ArrayList<>()
         keyValueData.add(new MemoryStorageModel(key: "username", value: "iamauser", groupId: userGroupId))
-        List<MemoryStorageModel> groupIdData = new ArrayList<>();
+        List<MemoryStorageModel> groupIdData = new ArrayList<>()
         groupIdData.add(new MemoryStorageModel(key: "username", value: "iamauser", groupId: userGroupId))
         groupIdData.add(new MemoryStorageModel(key: "name", value: "Iam A. User", groupId: userGroupId))
         groupIdData.add(new MemoryStorageModel(key: "email", value: "iamauser@example.com", groupId: userGroupId))
@@ -68,6 +69,7 @@ class UserServiceUnitTest extends Specification {
         then:
         1 * mockMemoryStorage.getByKeyValue("username", "iamauser") >> keyValueData
         1 * mockMemoryStorage.getByGroupId(userGroupId) >> groupIdData
+        assert result.id == userGroupId
         assert result.email == "iamauser@example.com"
         assert result.name == "Iam A. User"
         assert result.username == "iamauser"
@@ -84,4 +86,6 @@ class UserServiceUnitTest extends Specification {
         1 * mockMemoryStorage.getByKeyValue("username", "kaboom!") >> emptyList;
         thrown(NothingFoundException)
     }
+
+//    def "updateUser"
 }

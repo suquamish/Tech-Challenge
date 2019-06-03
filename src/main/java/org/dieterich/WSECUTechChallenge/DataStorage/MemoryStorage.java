@@ -84,7 +84,7 @@ public class MemoryStorage {
                 stream().
                 filter(entry -> entry.startsWith(groupId)).
                 collect(Collectors.toSet()).
-                toArray();
+                toArray(); // .toArray() here to avoid the false ConcurrentAccessException
 
         for (Object key : toRemove) {
             store.remove(key.toString());
