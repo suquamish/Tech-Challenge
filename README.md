@@ -7,6 +7,12 @@ A user model must have at least these fields:
    - name
    - email
    
+The solution [must] be able to meet the following needs:
+   - Find a user by username
+   - Create a user
+   - Delete a user
+   - Update a user's email and name
+   
 ## Instructions
 
 This project is Gradle based, with a wrapper.  From your desktop, you should be able to compile, test, and run this project.
