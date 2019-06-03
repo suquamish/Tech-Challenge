@@ -1,6 +1,6 @@
 package org.dieterich.WSECUTechChallenge
 
-import com.sun.org.apache.xpath.internal.operations.Bool
+
 import org.dieterich.WSECUTechChallenge.DataAccess.UserService
 import org.dieterich.WSECUTechChallenge.DataStorage.MemoryStorage
 import org.dieterich.WSECUTechChallenge.Exceptions.DuplicateUserException
@@ -114,5 +114,29 @@ class UserServiceIntegrationTest extends Specification {
         assert containsKey("${userToBeKept.id}/email")
         assert containsKey("${userToBeKept.id}/name")
         assert containsKey("${userToBeKept.id}/username")
+    }
+
+    def "updating a user changes an existing users data"() {
+        given:
+        def user = subject.createUser("joe.user", "Joe User", "email@example.com")
+        def checkUser = subject.getUserById(user.id)
+        def userMatches = { e, a ->
+            e.id == a.id &&
+                    e.username == a.username &&
+                    e.name == a.name &&
+                    e.email == a.email
+        }
+        assert userMatches(checkUser, user)
+        user.email = "joe.user@example.com"
+        user.name = "Mr. Joe User"
+        assert !userMatches(checkUser, user)
+
+        when:
+        subject.updateUser(user)
+        checkUser = subject.getUserById(checkUser.id)
+
+        then:
+        assert userMatches(checkUser, user)
+        noExceptionThrown()
     }
 }

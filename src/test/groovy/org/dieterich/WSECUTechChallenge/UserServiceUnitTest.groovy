@@ -7,6 +7,7 @@ import org.dieterich.WSECUTechChallenge.Exceptions.NothingFoundException
 import org.dieterich.WSECUTechChallenge.Exceptions.DuplicateUserException
 import org.dieterich.WSECUTechChallenge.Models.User
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class UserServiceUnitTest extends Specification {
     UserService subject
@@ -71,7 +72,7 @@ class UserServiceUnitTest extends Specification {
         mockData.add(new MemoryStorageModel(key: "email", value: "iamauser@example.com", groupId: userGroupId))
 
         when:
-        User result = subject.getUserByGroupId(userGroupId)
+        User result = subject.getUserById(userGroupId)
 
         then:
         1 * mockMemoryStorage.getByGroupId(userGroupId) >> mockData
@@ -154,5 +155,48 @@ class UserServiceUnitTest extends Specification {
         then:
         1 * mockMemoryStorage.getByGroupId(userId) >> new ArrayList<MemoryStorageModel>()
         thrown(NothingFoundException)
+    }
+
+    def "updateUser stores the new user info"() {
+        given:
+        def userId = UUID.randomUUID().toString()
+        def fakeUserData = new ArrayList<MemoryStorageModel>()
+        fakeUserData.add(new MemoryStorageModel(groupId: userId, key: "key", value: "value"))
+        _ * mockMemoryStorage.getByGroupId(userId) >> fakeUserData
+
+        when:
+        subject.updateUser(new User(id: userId, email: "email", username: "username", name: "name"))
+
+        then:
+        1 * mockMemoryStorage.put("email", "email", userId)
+        1 * mockMemoryStorage.put("username", "username", userId)
+        1 * mockMemoryStorage.put("name", "name", userId)
+    }
+
+    @Unroll
+    def "updateUser only updates differing data"() {
+        given:
+        def userId = UUID.randomUUID().toString()
+        def fakeUserData = new ArrayList<MemoryStorageModel>()
+        fakeUserData.add(new MemoryStorageModel(groupId: userId, key: "email", value: email))
+        fakeUserData.add(new MemoryStorageModel(groupId: userId, key: "username", value: username))
+        fakeUserData.add(new MemoryStorageModel(groupId: userId, key: "name", value: name))
+        _ * mockMemoryStorage.getByGroupId(userId) >> fakeUserData
+
+        when:
+        subject.updateUser(new User(id: userId, email: "email", username: "username", name: "name"))
+
+        then:
+        emailCallCount * mockMemoryStorage.put("email", "email", userId)
+        usernameCallCount * mockMemoryStorage.put("username", "username", userId)
+        nameCallCount * mockMemoryStorage.put("name", "name", userId)
+
+        where:
+        email       | name        | username    | emailCallCount | nameCallCount | usernameCallCount
+        "email"     | "name"      | "username"  | 0              | 0             | 0
+        "different" | "name"      | "username"  | 1              | 0             | 0
+        "email"     | "different" | "username"  | 0              | 1             | 0
+        "email"     | "name"      | "different" | 0              | 0             | 1
+        "different" | "different" | "different" | 1              | 1             | 1
     }
 }

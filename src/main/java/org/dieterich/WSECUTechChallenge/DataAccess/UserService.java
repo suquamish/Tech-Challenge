@@ -49,7 +49,7 @@ public class UserService {
         return UUID.randomUUID().toString();
     }
 
-    public User getUserByGroupId(String groupId) throws NothingFoundException {
+    public User getUserById(String groupId) throws NothingFoundException {
         List<MemoryStorageModel> userInfo = dataStorage.getByGroupId(groupId);
         if(userInfo.size() > 0) {
             return userFromMemoryModel(userInfo);
@@ -86,9 +86,17 @@ public class UserService {
     }
 
     public void updateUser(User user) throws NothingFoundException {
-        getUserByGroupId(user.getId());
-//        dataStorage.put(USERNAME_KEY, user.getUsername(), user.getId());
-//        dataStorage.put(EMAIL_KEY, user.getEmail(), user.getId());
-//        dataStorage.put(NAME_KEY, user.getName(), user.getId());
+        User previousUserData = getUserById(user.getId());
+        if (user.getUsername() != previousUserData.getUsername()) {
+            dataStorage.put(USERNAME_KEY, user.getUsername(), user.getId());
+        }
+
+        if(user.getEmail() != previousUserData.getEmail()) {
+            dataStorage.put(EMAIL_KEY, user.getEmail(), user.getId());
+        }
+
+        if(user.getName() != previousUserData.getName()) {
+            dataStorage.put(NAME_KEY, user.getName(), user.getId());
+        }
     }
 }
