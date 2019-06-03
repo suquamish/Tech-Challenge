@@ -113,7 +113,7 @@ trying to get a user with a bad id
 {"statusString":"Not Found","errorMessage":"Cannot find any matching user"}
 ```
 
-trying to create a new when there's one with an already existing username
+trying to create a new user with an already existing username
 
 `curl -v -XPOST -H 'Content-Type: application/json' -d '{"username":"suquamish","email":"thom@example.com","name":"Thom Dieterich","id":"30532965-6f5b-4aaa-aad1-bbcc9db4c2a5"}' http://localhost:8080/users/create-new`
 ```bash
