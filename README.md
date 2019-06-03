@@ -1,4 +1,4 @@
-#WSECU Tech Challenge
+# WSECU Tech Challenge
 
 Build a RESTful service using java and the spring framework to manage users. You can use any sort of persistence including in memory for storing the user data.
 
@@ -43,9 +43,9 @@ As user's data is returned in the default JSON format.  An example `User` might 
 ```json
 {
   "id": "30532965-6f5b-4aaa-aad1-bbcc9db4c2a5",
-  "username":" thom.dieterich",
+  "username": "suquamish",
   "name": "Thom Dieterich",
-  "email": "thom@dieterich.org",
+  "email": "thom.dieterich@example.com"
 }
 ```
 
