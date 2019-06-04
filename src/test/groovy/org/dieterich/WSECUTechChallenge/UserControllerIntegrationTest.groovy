@@ -1,15 +1,27 @@
 package org.dieterich.WSECUTechChallenge
 
 import groovy.json.JsonSlurper
-import org.springframework.boot.test.context.SpringBootTest
-import spock.lang.Ignore
+import org.springframework.boot.SpringApplication
+import org.springframework.context.ConfigurableApplicationContext
+import spock.lang.Shared
 import spock.lang.Specification
 
-@Ignore
-@SpringBootTest
 class UserControllerIntegrationTest extends Specification {
     URL client
     HttpURLConnection connection
+
+    @Shared
+    ConfigurableApplicationContext context
+
+    def setupSpec() {
+        String[] args = []
+        context = SpringApplication.run(WSECUTechChallengeApplication.class, args)
+        context.registerShutdownHook()
+    }
+
+    def cleanupSpec() {
+        if (context && context.isRunning()) context.stop()
+    }
 
     def "I can request a user that does not exist, and get an acceptable error"() {
         setup:
