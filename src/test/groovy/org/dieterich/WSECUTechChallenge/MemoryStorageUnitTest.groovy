@@ -4,8 +4,6 @@ import org.dieterich.WSECUTechChallenge.DataStorage.MemoryStorage
 import org.dieterich.WSECUTechChallenge.DataStorage.MemoryStorageModel
 import spock.lang.Specification
 
-import java.util.concurrent.ConcurrentHashMap
-
 class MemoryStorageUnitTest extends Specification {
     MemoryStorage subject
 
