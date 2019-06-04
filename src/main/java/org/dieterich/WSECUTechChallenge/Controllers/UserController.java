@@ -50,8 +50,8 @@ public class UserController {
     }
 
     @PostMapping("/create-new")
-    public User createUser(@RequestBody User data) throws DuplicateUserException {
-        return userService.createUser(data.getUsername(), data.getName(), data.getEmail());
+    public User createUser(@RequestBody User userData) throws DuplicateUserException {
+        return userService.createUser(userData.getUsername(), userData.getName(), userData.getEmail());
     }
 
     @PostMapping("/id/{userId}/update")
