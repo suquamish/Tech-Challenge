@@ -55,10 +55,10 @@ public class UserController {
     }
 
     @PostMapping("/id/{userId}/update")
-    public User updateUser(@RequestBody User data, @PathVariable String userId) throws NothingFoundException {
-        if(data.getId() != userId) data.setId(userId);
-        userService.updateUser(data);
-        return userService.getUserById(data.getId());
+    public User updateUser(@RequestBody User userData, @PathVariable String userId) throws NothingFoundException {
+        userData.setId(userId);
+        userService.updateUser(userData);
+        return userService.getUserById(userData.getId());
     }
 
     @DeleteMapping("/id/{userId}/delete")
