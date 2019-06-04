@@ -171,20 +171,3 @@ I opted for in memory *persistence* option, so each time you restart the service
 The server retains it's default port of 8080 to bind to. If you've got something else running on that port you'll need change the server port by setting a server.port property:
 
 `java -jar -Dserver.port=8081 build/libs/WSECUTechChallenge-0.0.1.jar`
-
-The `UserControlerIntegrationTest` is marked as `@Ignored`.  As mentioned in one of my commits:
-
-> Sometimes spring is slow to start, spring-test allows the test suite to
-> begin executing before the server starts, resulting in false failures.
-
-I've run into this before, and running the server in the background before
-executing the test should keep things reliable.
-
-```
-$ ./gradlew clean test
-
-   BUILD SUCCESSFUL in 5s
-   6 actionable tasks: 6 executed
-```
-
-The better fix I've done in the past is to manually start up the server in the `specSetup()` which allows Spring to fully start before the tests to start. In the interest of time, I decided to not re-discover that trick, and just make the note here.
