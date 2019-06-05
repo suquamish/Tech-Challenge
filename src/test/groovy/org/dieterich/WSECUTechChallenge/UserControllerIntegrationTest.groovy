@@ -38,7 +38,7 @@ class UserControllerIntegrationTest extends Specification {
 
     def "I can create a user"() {
         setup:
-        client = new URL("http://localhost:8080/users/create-new")
+        client = new URL("http://localhost:8080/users")
         connection = client.openConnection()
         connection.doOutput = true
         connection.setRequestMethod("POST")
@@ -58,28 +58,28 @@ class UserControllerIntegrationTest extends Specification {
         assert userData.containsKey("email") && userData.email == "joe.user@example.com"
         assert userData.containsKey("username") && userData.username == "joe"
 
-        when: "I request that user, they should exist"
+        when: "I request that user by username"
         client = new URL("http://localhost:8080/users/username/joe")
         connection = client.openConnection()
         connection.setRequestMethod("GET")
         connection.connect()
         def checkUserData = new JsonSlurper().parseText(connection.inputStream.text)
 
-        then:
+        then: "they should exist"
         assert 200 == connection.getResponseCode()
         assert checkUserData.id == userData.id
         assert checkUserData.name == userData.name
         assert checkUserData.email == userData.email
         assert checkUserData.username == userData.username
 
-        when: "I request that user by the assigned id, they should exist"
+        when: "I request that user by the assigned id"
         client = new URL("http://localhost:8080/users/id/${userData.id}")
         connection = client.openConnection()
         connection.setRequestMethod("GET")
         connection.connect()
         checkUserData = new JsonSlurper().parseText(connection.inputStream.text)
 
-        then:
+        then: "they should exist"
         assert 200 == connection.getResponseCode()
         assert checkUserData.id == userData.id
         assert checkUserData.name == userData.name
@@ -89,7 +89,7 @@ class UserControllerIntegrationTest extends Specification {
 
     def "I can update a user"() {
         setup:
-        client = new URL("http://localhost:8080/users/create-new")
+        client = new URL("http://localhost:8080/users")
         connection = client.openConnection()
         connection.doOutput = true
         connection.setRequestMethod("POST")
@@ -102,7 +102,7 @@ class UserControllerIntegrationTest extends Specification {
         def updateJson = '{"id":"' + userData.id + '","name":"Just A. User","email":"different.email@example.com","username":"w00t"}'
 
         when:
-        client = new URL("http://localhost:8080/users/id/${userData.id}/update")
+        client = new URL("http://localhost:8080/users/id/${userData.id}")
         connection = client.openConnection()
         connection.doOutput = true
         connection.setRequestMethod("POST")
@@ -114,14 +114,14 @@ class UserControllerIntegrationTest extends Specification {
         then:
         assert 200 == connection.getResponseCode()
 
-        when: "I request that user by the assigned id, they should exist with the new data"
+        when: "I request that user by the assigned id"
         client = new URL("http://localhost:8080/users/id/${userData.id}")
         connection = client.openConnection()
         connection.setRequestMethod("GET")
         connection.connect()
         def checkUserData = new JsonSlurper().parseText(connection.inputStream.text)
 
-        then:
+        then: "that user should exist with the new data"
         assert 200 == connection.getResponseCode()
         assert checkUserData.id == userData.id
         assert checkUserData.name == "Just A. User"
@@ -131,7 +131,7 @@ class UserControllerIntegrationTest extends Specification {
 
     def "I can delete a user"() {
         setup:
-        client = new URL("http://localhost:8080/users/create-new")
+        client = new URL("http://localhost:8080/users")
         connection = client.openConnection()
         connection.doOutput = true
         connection.setRequestMethod("POST")
@@ -143,7 +143,7 @@ class UserControllerIntegrationTest extends Specification {
         def userData = new JsonSlurper().parseText(connection.inputStream.text)
 
         when:
-        client = new URL("http://localhost:8080/users/id/${userData.id}/delete")
+        client = new URL("http://localhost:8080/users/id/${userData.id}")
         connection = client.openConnection()
         connection.setRequestMethod("DELETE")
         connection.connect()

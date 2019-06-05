@@ -39,6 +39,11 @@ public class UserController {
         }
     }
 
+    @PostMapping()
+    public User createUser(@RequestBody User userData) throws DuplicateUserException {
+        return userService.createUser(userData.getUsername(), userData.getName(), userData.getEmail());
+    }
+
     @GetMapping("/username/{username}")
     public User getUserByUsername(@PathVariable String username) throws NothingFoundException {
         return userService.getUserByUsername(username);
@@ -49,19 +54,14 @@ public class UserController {
         return userService.getUserById(userId);
     }
 
-    @PostMapping("/create-new")
-    public User createUser(@RequestBody User userData) throws DuplicateUserException {
-        return userService.createUser(userData.getUsername(), userData.getName(), userData.getEmail());
-    }
-
-    @PostMapping("/id/{userId}/update")
+    @PostMapping("/id/{userId}")
     public User updateUser(@RequestBody User userData, @PathVariable String userId) throws NothingFoundException {
         userData.setId(userId);
         userService.updateUser(userData);
         return userService.getUserById(userData.getId());
     }
 
-    @DeleteMapping("/id/{userId}/delete")
+    @DeleteMapping("/id/{userId}")
     public void deleteUser(@PathVariable String userId) {
         userService.deleteUserById(userId);
     }
