@@ -14,31 +14,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    protected class UserError {
-        private String statusString;
-        private String errorMessage;
-
-        protected UserError() {}
-
-        public UserError setStatusString(String statusString) {
-            this.statusString = statusString;
-            return this;
-        }
-
-        public String getStatusString() {
-            return statusString;
-        }
-
-        public UserError setErrorMessage(String errorMessage) {
-            this.errorMessage = errorMessage;
-            return this;
-        }
-
-        public String getErrorMessage() {
-            return errorMessage;
-        }
-    }
-
     @PostMapping()
     public User createUser(@RequestBody User userData) throws DuplicateUserException {
         return userService.createUser(userData.getUsername(), userData.getName(), userData.getEmail());
@@ -82,5 +57,30 @@ public class UserController {
         error.setErrorMessage("User data provided must be unique");
         error.setStatusString("Unable to complete");
         return error;
+    }
+
+    protected class UserError {
+        private String statusString;
+        private String errorMessage;
+
+        protected UserError() {}
+
+        public UserError setStatusString(String statusString) {
+            this.statusString = statusString;
+            return this;
+        }
+
+        public String getStatusString() {
+            return statusString;
+        }
+
+        public UserError setErrorMessage(String errorMessage) {
+            this.errorMessage = errorMessage;
+            return this;
+        }
+
+        public String getErrorMessage() {
+            return errorMessage;
+        }
     }
 }
