@@ -18,10 +18,6 @@ public class MemoryStorage {
     private MemoryStorage() {
     }
 
-    public synchronized void put(String key, String value, String groupId) {
-        store.put(String.format("%s/%s", groupId, key), value);
-    }
-
     private static MemoryStorageModel createModelFromEntry(Map.Entry<String, String> entry) {
         return new MemoryStorageModel().
                 setGroupId(entry.getKey().split("/")[0]).
@@ -39,6 +35,10 @@ public class MemoryStorage {
 
     private boolean groupIdMatches(Map.Entry<String, String> entry, String groupId) {
         return entry.getKey().split("/")[0].equals(groupId);
+    }
+
+    public synchronized void put(String key, String value, String groupId) {
+        store.put(String.format("%s/%s", groupId, key), value);
     }
 
     public List<MemoryStorageModel> getByGroupId(String groupId) {
