@@ -91,7 +91,7 @@ class UserServiceUnitTest extends Specification {
         User result = subject.getUserByUsername("iamauser")
 
         then:
-        1 * mockMemoryStorage.getByKeyValue("username", "iamauser") >> keyValueData
+        2 * mockMemoryStorage.getByKeyValue("username", "iamauser") >> keyValueData
         1 * mockMemoryStorage.getByGroupId(userGroupId) >> groupIdData
         assert result.id == userGroupId
         assert result.email == "iamauser@example.com"

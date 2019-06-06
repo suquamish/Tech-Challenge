@@ -6,17 +6,17 @@ public class User {
     private String name;
     private String email;
 
+    public User setId(String id) {
+        this.id = id;
+        return this;
+    }
+
     public String getId() {
         return id;
     }
 
     public User setUsername(String username) {
         this.username = username;
-        return this;
-    }
-
-    public User setId(String id) {
-        this.id = id;
         return this;
     }
 

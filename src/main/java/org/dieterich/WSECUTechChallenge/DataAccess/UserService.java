@@ -40,9 +40,9 @@ public class UserService {
         return result;
     }
 
-    private boolean userExists(String username) {
-        List<MemoryStorageModel> otherUsers = dataStorage.getByKeyValue(USERNAME_KEY, username);
-        return otherUsers.size() > 0;
+    private boolean usernameExists(String username) {
+        List<MemoryStorageModel> userInfo = dataStorage.getByKeyValue(USERNAME_KEY, username);
+        return userInfo.size() > 0;
     }
 
     public User getUserById(String groupId) throws NothingFoundException {
@@ -54,24 +54,20 @@ public class UserService {
     }
 
     public User getUserByUsername(String username) throws NothingFoundException {
-        User result;
-        List<MemoryStorageModel> data = dataStorage.getByKeyValue(USERNAME_KEY, username);
-        if(data.isEmpty()) throw new NothingFoundException("${username} does not exist");
-        data = dataStorage.getByGroupId(data.get(0).getGroupId());
-        result = userFromMemoryModel(data);
-        return result;
+        if(usernameExists(username)) {
+            String userId = dataStorage.getByKeyValue(USERNAME_KEY, username).get(0).getGroupId();
+            return userFromMemoryModel(dataStorage.getByGroupId(userId));
+        }
+        throw new NothingFoundException("${username} does not exist");
     }
 
     public User createUser(String username, String name, String email) throws DuplicateUserException {
-        User result = new User();
-        if (userExists(username)) throw new DuplicateUserException("${username} already exists");
+        User result;
+        if (usernameExists(username)) throw new DuplicateUserException("${username} already exists");
         String userId = dataStorage.put(USERNAME_KEY, username).get(0).getGroupId();
-        result.setId(userId);
-        result.setUsername(username);
-        dataStorage.put(EMAIL_KEY, email, result.getId());
-        result.setEmail(email);
-        dataStorage.put(NAME_KEY, name, result.getId());
-        result.setName(name);
+        dataStorage.put(EMAIL_KEY, email, userId);
+        dataStorage.put(NAME_KEY, name, userId);
+        result = new User().setUsername(username).setEmail(email).setName(name).setId(userId);
         return result;
     }
 
