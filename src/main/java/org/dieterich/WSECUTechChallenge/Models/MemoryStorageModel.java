@@ -1,4 +1,4 @@
-package org.dieterich.WSECUTechChallenge.DataStorage;
+package org.dieterich.WSECUTechChallenge.Models;
 
 public class MemoryStorageModel {
     private String groupId;

@@ -1,13 +1,13 @@
 package org.dieterich.WSECUTechChallenge.DataAccess;
 
 import org.dieterich.WSECUTechChallenge.DataStorage.MemoryStorage;
-import org.dieterich.WSECUTechChallenge.DataStorage.MemoryStorageModel;
 import org.dieterich.WSECUTechChallenge.Exceptions.DuplicateUserException;
 import org.dieterich.WSECUTechChallenge.Exceptions.NothingFoundException;
+import org.dieterich.WSECUTechChallenge.Models.MemoryStorageModel;
 import org.dieterich.WSECUTechChallenge.Models.User;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class UserService {
@@ -45,10 +45,6 @@ public class UserService {
         return otherUsers.size() > 0;
     }
 
-    private String generateUserId() {
-        return UUID.randomUUID().toString();
-    }
-
     public User getUserById(String groupId) throws NothingFoundException {
         List<MemoryStorageModel> userInfo = dataStorage.getByGroupId(groupId);
         if(userInfo.size() > 0) {
@@ -69,8 +65,8 @@ public class UserService {
     public User createUser(String username, String name, String email) throws DuplicateUserException {
         User result = new User();
         if (userExists(username)) throw new DuplicateUserException("${username} already exists");
-        result.setId(generateUserId());
-        dataStorage.put(USERNAME_KEY, username, result.getId());
+        String userId = dataStorage.put(USERNAME_KEY, username).get(0).getGroupId();
+        result.setId(userId);
         result.setUsername(username);
         dataStorage.put(EMAIL_KEY, email, result.getId());
         result.setEmail(email);

@@ -1,7 +1,8 @@
 package org.dieterich.WSECUTechChallenge
 
 import org.dieterich.WSECUTechChallenge.DataStorage.MemoryStorage
-import org.dieterich.WSECUTechChallenge.DataStorage.MemoryStorageModel
+import org.dieterich.WSECUTechChallenge.Exceptions.NoCollectionFoundException
+import org.dieterich.WSECUTechChallenge.Models.MemoryStorageModel
 import spock.lang.Specification
 
 class MemoryStorageUnitTest extends Specification {
@@ -24,7 +25,7 @@ class MemoryStorageUnitTest extends Specification {
         subject == MemoryStorage.getInstance()
     }
 
-    def "allows me to store data"() {
+    def "allows me to store new data"() {
         given:
         def groupId = UUID.randomUUID().toString()
         def key = "somekey"
@@ -33,35 +34,36 @@ class MemoryStorageUnitTest extends Specification {
         subject.setStore(mockHashMap)
         assert mockHashMap == subject.getStore()
 
-
         when:
-        subject.put(key, value, groupId)
+        subject.put(key, value)
 
         then:
-        1 * mockHashMap.put("${groupId}/${key}", value)
+        1 * mockHashMap.put({String k ->
+            assert k.endsWith(key)
+            assert UUID.fromString(k.split("/")[0])
+        }, value)
     }
 
     def "allows me to retrieve data by groupid"() {
         given:
-        def groupId = UUID.randomUUID().toString()
-        subject.put("a key", "a value", groupId)
+        def groupId = subject.put("a key", "a value").first().groupId
 
         when:
         def result = subject.getByGroupId(groupId)
 
         then:
         assert result instanceof List
+        assert result.size() == 1
         assert result.first().groupId == groupId
         assert result.first().key == "a key"
         assert result.first().value == "a value"
     }
 
-    def "allows me to retrieve all data with matching groupids"() {
+    def "allows me to retrieve all data with matching group ids"() {
         given:
-        def groupId = UUID.randomUUID().toString()
-        subject.put("first key", "first value", groupId)
+        def groupId = subject.put("first key", "first value").first().groupId
         subject.put("second key", "second value", groupId)
-        subject.put("third key", "third value", UUID.randomUUID().toString())
+        subject.put("third key", "third value")
         List expectedResults = [
                 new MemoryStorageModel(key: "first key", value: "first value", groupId: groupId),
                 new MemoryStorageModel(key: "second key", value: "second value", groupId: groupId),
@@ -80,9 +82,9 @@ class MemoryStorageUnitTest extends Specification {
 
     def "allows me to retrieve all data with matching keys"() {
         given:
-        subject.put("name", "Joey McJoe", UUID.randomUUID().toString())
-        subject.put("name", "Andy Vanandy", UUID.randomUUID().toString())
-        subject.put("email", "frothy@example.com", UUID.randomUUID().toString())
+        subject.put("name", "Joey McJoe")
+        subject.put("name", "Andy Vanandy")
+        subject.put("email", "frothy@example.com")
 
         when:
         def results = subject.getByKey("name")
@@ -98,9 +100,9 @@ class MemoryStorageUnitTest extends Specification {
 
     def "allows me to retrieve all data with matching values"() {
         given:
-        subject.put("name", "Joey McJoe", UUID.randomUUID().toString())
-        subject.put("email", "frothy@example.com", UUID.randomUUID().toString())
-        subject.put("username", "frothy@example.com", UUID.randomUUID().toString())
+        subject.put("name", "Joey McJoe")
+        subject.put("email", "frothy@example.com")
+        subject.put("username", "frothy@example.com")
 
         when:
         def results = subject.getByValue("frothy@example.com")
@@ -114,9 +116,9 @@ class MemoryStorageUnitTest extends Specification {
 
     def "allows me to retrieve all data with matching key-value pairs"() {
         given:
-        subject.put("name", "Joey McJoe", UUID.randomUUID().toString())
-        subject.put("email", "frothy@example.com", UUID.randomUUID().toString())
-        subject.put("username", "frothy@example.com", UUID.randomUUID().toString())
+        subject.put("name", "Joey McJoe")
+        def groupId = subject.put("email", "frothy@example.com").first().groupId
+        subject.put("username", "frothy@example.com")
 
         when:
         def results = subject.getByKeyValue("email", "frothy@example.com")
@@ -124,17 +126,17 @@ class MemoryStorageUnitTest extends Specification {
         then:
         assert results instanceof List
         assert results.size() == 1
-        results.each { e -> assert e.key == "email" && e.value == "frothy@example.com" }
+        results.each { e -> assert e.key == "email" && e.value == "frothy@example.com" && e.groupId == groupId }
         assert !results.find { e -> e.key ==  "name" || e.key == "username" }
     }
 
     def "overwrites data with matching criteria"() {
         given:
-        subject.put("email", "frothy@example.com", "4")
+        def groupId = subject.put("email", "frothy@example.com").first().groupId
 
         when:
         def resultsBefore = subject.getByKey("email")
-        subject.put("email", "bubbly@example.com", "4")
+        subject.put("email", "bubbly@example.com", groupId)
         def resultsAfter = subject.getByKey("email")
 
         then:
@@ -146,12 +148,15 @@ class MemoryStorageUnitTest extends Specification {
 
     def "allows me to delete all data with a matching groupId"() {
         given:
-        def groupIdToDelete = UUID.randomUUID().toString();
-        def groupIdToKeep = UUID.randomUUID().toString();
-        subject.put("name", "Joey McJoe", groupIdToKeep)
+        def groupIdToDelete;
+        def groupIdToKeep;
+        List<MemoryStorageModel> setupResult = subject.put("name", "Joey McJoe")
+        groupIdToKeep = setupResult.first().groupId
         subject.put("email", "frothy@example.com", groupIdToKeep)
         subject.put("username", "McJ!", groupIdToKeep)
-        subject.put("name", "Abra Cadabra", groupIdToDelete)
+
+        setupResult = subject.put("name", "Abra Cadabra")
+        groupIdToDelete = setupResult.first().groupId
         subject.put("email", "mystic@example.com", groupIdToDelete)
         subject.put("username", "alakazam", groupIdToDelete)
         assert subject.getStore().size() == 6
@@ -193,5 +198,41 @@ class MemoryStorageUnitTest extends Specification {
         assert resultGetByValue.size() == 0
         assert resultGetByKeyValue instanceof List
         assert resultGetByKeyValue.size() == 0
+    }
+
+    def "when storing new data, a group id should be automatically generated if none passed in"() {
+        when:
+        List<MemoryStorageModel> result = subject.put("a key", "a value", groupId)
+
+        then:
+        assert result.first().groupId && !result.first().groupId.isEmpty()
+        assert result.first().key == "a key"
+        assert result.first().value == "a value"
+
+        where:
+        groupId << [null, ""]
+    }
+
+    def "when storing data as part of a collection, if passed in a group id, should validate it exists"() {
+        given:
+        subject.getStore().clear
+
+        when:
+        List<MemoryStorageModel> result = subject.put("a key", "a value", UUID.randomUUID().toString())
+
+        then:
+        NoCollectionFoundException ncfe = thrown(NoCollectionFoundException)
+        assert !result
+    }
+
+    def "provides a convenience method for putting new data"() {
+        given:
+        MemoryStorage spySubject = Spy(subject)
+
+        when:
+        spySubject.put("key", "value")
+
+        then:
+        1 * spySubject.put("key", "value", null) >> null
     }
 }

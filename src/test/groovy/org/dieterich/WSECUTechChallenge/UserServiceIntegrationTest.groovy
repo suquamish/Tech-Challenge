@@ -26,11 +26,10 @@ class UserServiceIntegrationTest extends Specification {
     def "getByUserName returns an existing user"() {
         given:
         def storage = MemoryStorage.getInstance()
-        def groupId = UUID.randomUUID().toString()
-        storage.put("name", "Joey McJoe", groupId)
+        def groupId = storage.put("name", "Joey McJoe").first().groupId
         storage.put("email", "joey.mcjoe@example.com", groupId)
         storage.put("username", "kaboom!", groupId)
-        storage.put("username", "w00tw00t", UUID.randomUUID().toString())
+        storage.put("username", "w00tw00t")
 
         when:
         def result = subject.getUserByUsername("kaboom!")
@@ -45,7 +44,7 @@ class UserServiceIntegrationTest extends Specification {
     def "createUser throws an exception if there is a taken username"() {
         given:
         def storage = MemoryStorage.getInstance()
-        storage.put("username", "kaboom!", UUID.randomUUID().toString())
+        storage.put("username", "kaboom!")
 
         when:
         subject.createUser("kaboom!", "whatever", "does not matter")

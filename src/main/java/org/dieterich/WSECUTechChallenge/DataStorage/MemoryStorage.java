@@ -1,6 +1,9 @@
 package org.dieterich.WSECUTechChallenge.DataStorage;
 
+import org.dieterich.WSECUTechChallenge.Exceptions.NoCollectionFoundException;
+import org.dieterich.WSECUTechChallenge.Models.MemoryStorageModel;
 import org.springframework.stereotype.Repository;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -15,8 +18,7 @@ public class MemoryStorage {
         return instance;
     }
 
-    private MemoryStorage() {
-    }
+    private MemoryStorage() {}
 
     private static MemoryStorageModel createModelFromEntry(Map.Entry<String, String> entry) {
         return new MemoryStorageModel().
@@ -37,14 +39,38 @@ public class MemoryStorage {
         return entry.getKey().split("/")[0].equals(groupId);
     }
 
-    public synchronized void put(String key, String value, String groupId) {
-        store.put(String.format("%s/%s", groupId, key), value);
+    private String generateGroupId() { return UUID.randomUUID().toString(); }
+
+    public synchronized List<MemoryStorageModel> put(String key, String value, String groupId) throws NoCollectionFoundException {
+        MemoryStorageModel item = new MemoryStorageModel();
+        item.setGroupId(groupId);
+        item.setKey(key);
+        item.setValue(value);
+
+        if (groupId == null || groupId.isEmpty()) {
+            item.setGroupId(generateGroupId());
+        } else {
+            store.
+                    keySet().
+                    parallelStream().
+                    filter(k -> k.startsWith(groupId)).
+                    findAny().
+                    orElseThrow(NoCollectionFoundException::new);
+        }
+        store.put(String.format("%s/%s", item.getGroupId(), item.getKey()), item.getValue());
+        List<MemoryStorageModel> result = new ArrayList<>();
+        result.add(item);
+        return result;
+    }
+
+    public synchronized List<MemoryStorageModel> put(String key, String value) {
+        return put(key, value, null);
     }
 
     public List<MemoryStorageModel> getByGroupId(String groupId) {
         return store.
                 entrySet().
-                stream().
+                parallelStream().
                 filter(entry -> groupIdMatches(entry, groupId)).
                 map(entry -> createModelFromEntry(entry)).
                 collect(Collectors.toList());
@@ -53,7 +79,7 @@ public class MemoryStorage {
     public List<MemoryStorageModel> getByKey(String key) {
         return store.
                 entrySet().
-                stream().
+                parallelStream().
                 filter(entry -> keyMatches(key, entry)).
                 map(entry -> createModelFromEntry(entry)).
                 collect(Collectors.toList());
@@ -62,7 +88,7 @@ public class MemoryStorage {
     public List<MemoryStorageModel> getByValue(String value) {
         return store.
                 entrySet().
-                stream().
+                parallelStream().
                 filter(entry -> entry.getValue().equals(value)).
                 map(entry -> createModelFromEntry(entry)).
                 collect(Collectors.toList());
@@ -71,7 +97,7 @@ public class MemoryStorage {
     public List<MemoryStorageModel> getByKeyValue(String key, String value) {
         return store.
                 entrySet().
-                stream().
+                parallelStream().
                 filter(entry -> keyValueMatches(entry, key, value)).
                 map(MemoryStorage::createModelFromEntry
                 ).collect(Collectors.toList());
@@ -82,7 +108,7 @@ public class MemoryStorage {
 
         Object[] toRemove = store.
                 keySet().
-                stream().
+                parallelStream().
                 filter(entry -> entry.startsWith(groupId)).
                 collect(Collectors.toSet()).
                 toArray(); // .toArray() here to avoid the false ConcurrentAccessException

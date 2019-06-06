@@ -2,7 +2,7 @@ package org.dieterich.WSECUTechChallenge
 
 import org.dieterich.WSECUTechChallenge.DataAccess.UserService
 import org.dieterich.WSECUTechChallenge.DataStorage.MemoryStorage
-import org.dieterich.WSECUTechChallenge.DataStorage.MemoryStorageModel
+import org.dieterich.WSECUTechChallenge.Models.MemoryStorageModel
 import org.dieterich.WSECUTechChallenge.Exceptions.NothingFoundException
 import org.dieterich.WSECUTechChallenge.Exceptions.DuplicateUserException
 import org.dieterich.WSECUTechChallenge.Models.User
@@ -35,11 +35,13 @@ class UserServiceUnitTest extends Specification {
         thrown(DuplicateUserException)
     }
 
-    def "createUser allows me to insert a user into the datastore"() {
+    def "createUser allows me to insert a new user into the datastore"() {
         given:
         List<MemoryStorageModel> mockData = new ArrayList<>()
-        String userId
+        String userId = UUID.randomUUID().toString()
         def storeUserId = { String id -> userId = id }
+        List<MemoryStorage> fauxStorageResult = new ArrayList<MemoryStorageModel>()
+        fauxStorageResult.add(0, new MemoryStorageModel(groupId: userId, key: "foo", value: "bar"))
 
         when:
         def result = subject.createUser("newuser", "Newton User", "new.user@example.com")
@@ -47,16 +49,9 @@ class UserServiceUnitTest extends Specification {
         then:
         assert result instanceof User
         1 * mockMemoryStorage.getByKeyValue("username", "newuser") >> new ArrayList<MemoryStorageModel>()
-        1 * mockMemoryStorage.put(
-                "username",
-                "newuser",
-                { String uuid ->
-                    storeUserId(uuid)
-                    assert UUID.fromString(uuid)
-                }
-        )
-        1 * mockMemoryStorage.put("email", "new.user@example.com", _)
-        1 * mockMemoryStorage.put("name", "Newton User", _)
+        1 * mockMemoryStorage.put("username","newuser") >> fauxStorageResult
+        1 * mockMemoryStorage.put("email", "new.user@example.com", userId)
+        1 * mockMemoryStorage.put("name", "Newton User", userId)
         assert result.id == userId
         assert result.email == "new.user@example.com"
         assert result.username == "newuser"
