@@ -1,5 +1,8 @@
 package org.dieterich.WSECUTechChallenge.Controllers;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.dieterich.WSECUTechChallenge.DataAccess.UserService;
 import org.dieterich.WSECUTechChallenge.Exceptions.DuplicateUserException;
 import org.dieterich.WSECUTechChallenge.Exceptions.NothingFoundException;
@@ -14,29 +17,53 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping()
+    @PostMapping(produces = "application/json")
+    @ApiOperation("Creates a new user.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = User.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = UserError.class )
+    })
     public User createUser(@RequestBody User userData) throws DuplicateUserException {
         return userService.createUser(userData.getUsername(), userData.getName(), userData.getEmail());
     }
 
-    @GetMapping("/username/{username}")
+    @GetMapping(path = "/username/{username}", produces = "application/json")
+    @ApiOperation("Retrieves an existing user by username")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = User.class),
+            @ApiResponse(code = 404, message = "Not Found", response = UserError.class )
+    })
     public User getUserByUsername(@PathVariable String username) throws NothingFoundException {
         return userService.getUserByUsername(username);
     }
 
-    @GetMapping("/id/{userId}")
+    @GetMapping(path = "/id/{userId}", produces = "application/json")
+    @ApiOperation("Retrieves an existing user by id.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = User.class),
+            @ApiResponse(code = 404, message = "Not Found", response = UserError.class )
+    })
     public User getUserById(@PathVariable String userId) throws NothingFoundException {
         return userService.getUserById(userId);
     }
 
-    @PostMapping("/id/{userId}")
+    @PostMapping(path = "/id/{userId}", produces = "application/json")
+    @ApiOperation("Updates an existing user.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = User.class),
+            @ApiResponse(code = 404, message = "Not Found", response = UserError.class )
+    })
     public User updateUser(@RequestBody User userData, @PathVariable String userId) throws NothingFoundException {
         userData.setId(userId);
         userService.updateUser(userData);
         return userService.getUserById(userData.getId());
     }
 
-    @DeleteMapping("/id/{userId}")
+    @DeleteMapping(path = "/id/{userId}")
+    @ApiOperation("Deletes an existing user.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "No Content", response = void.class)
+    })
     public void deleteUser(@PathVariable String userId) {
         userService.deleteUserById(userId);
     }
