@@ -41,7 +41,9 @@ After building (see above), starting the server from the project root is as simp
 java -jar build/libs/WSECUTechChallenge-0.0.1.jar
 ```
 
-### Making request to the application
+### Making requests to the application
+
+**Swagger** documentation is provided at http://localhost:8080/swagger-ui.html
 
 The root path for getting and setting user data is `/users`
 
@@ -65,17 +67,19 @@ You can retrieve users by username `.../username/{username}` or id `.../id/{user
 
 Creating or Updating data is done via an HTTP `POST`. Deleting data is via an HTTP `DELETE`
 
-You can create new users via `.../create-new`
+You can create new users via `.../`
 
 To create a new user, you need to `POST` a user model in JSON format with the `name`, `username`, and `email` attributes.
 
-You can update existing users via `.../id/{user id uuid}/update`
+You can update existing users via `.../id/{user id uuid}`
 
 To update an existing user, you need to `POST` a fully populated user model in JSON format, including the `id`.
 
-You can delete an existing user via `.../id/{user id uuid}/delete` 
+You can delete an existing user via `.../id/{user id uuid}` 
 
 ### Request Examples
+
+Below are a few curl examples, but the best documentation is the swagger ui ([see above](#making-requests-to-the-application))
 
 #### Create a new user
 `curl -X POST -H 'Content-Type: application/json' -d '{"username": "suquamish", "email": "thom.dieterich@example.com", "name": "Thom Dieterich" }' http://localhost:8080/users`
