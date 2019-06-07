@@ -1,4 +1,4 @@
-# WSECU Tech Challenge
+# Tech Challenge
 
 Build a RESTful service using java and the spring framework to manage users. You can use any sort of persistence including in memory for storing the user data.
 
@@ -12,6 +12,8 @@ The solution [must] be able to meet the following needs:
    - Create a user
    - Delete a user
    - Update a user's email and name
+   
+You have 24 hours... Go!
    
 ## Instructions
 
