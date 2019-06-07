@@ -4,8 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class WSECUTechChallengeApplication {
+public class TechChallengeApplication {
     public static void main(String[] args) {
-        SpringApplication.run(WSECUTechChallengeApplication.class, args);
+        SpringApplication.run(TechChallengeApplication.class, args);
     }
 }

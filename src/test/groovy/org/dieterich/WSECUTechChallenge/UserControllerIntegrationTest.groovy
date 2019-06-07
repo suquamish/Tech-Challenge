@@ -15,7 +15,7 @@ class UserControllerIntegrationTest extends Specification {
 
     def setupSpec() {
         String[] args = []
-        context = SpringApplication.run(WSECUTechChallengeApplication.class, args)
+        context = SpringApplication.run(TechChallengeApplication.class, args)
         context.registerShutdownHook()
     }
 
