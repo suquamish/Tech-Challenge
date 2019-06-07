@@ -5,6 +5,7 @@ import org.dieterich.TechChallenge.DataAccess.UserService
 import org.dieterich.TechChallenge.Exceptions.DuplicateUserException
 import org.dieterich.TechChallenge.Exceptions.NothingFoundException
 import org.dieterich.TechChallenge.Models.User
+import org.dieterich.TechChallenge.Models.UserError
 import spock.lang.Specification
 
 class UserControllerUnitTest extends Specification {
@@ -71,7 +72,7 @@ class UserControllerUnitTest extends Specification {
         def result = subject.handleNotFoundException(new NothingFoundException("KABOOM!"))
 
         then:
-        assert result instanceof UserController.UserError
+        assert result instanceof UserError
         assert result.statusString == "Not Found"
         assert result.errorMessage == "Cannot find any matching user"
     }
@@ -81,7 +82,7 @@ class UserControllerUnitTest extends Specification {
         def result = subject.handleDuplicateUserException(new DuplicateUserException("KABOOM!"))
 
         then:
-        assert result instanceof UserController.UserError
+        assert result instanceof UserError
         assert result.statusString == "Unable to complete"
         assert result.errorMessage == "User data provided must be unique"
     }

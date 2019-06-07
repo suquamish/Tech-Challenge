@@ -7,6 +7,7 @@ import org.dieterich.TechChallenge.DataAccess.UserService;
 import org.dieterich.TechChallenge.Exceptions.DuplicateUserException;
 import org.dieterich.TechChallenge.Exceptions.NothingFoundException;
 import org.dieterich.TechChallenge.Models.User;
+import org.dieterich.TechChallenge.Models.UserError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -84,30 +85,5 @@ public class UserController {
         error.setErrorMessage("User data provided must be unique");
         error.setStatusString("Unable to complete");
         return error;
-    }
-
-    protected class UserError {
-        private String statusString;
-        private String errorMessage;
-
-        protected UserError() {}
-
-        public UserError setStatusString(String statusString) {
-            this.statusString = statusString;
-            return this;
-        }
-
-        public String getStatusString() {
-            return statusString;
-        }
-
-        public UserError setErrorMessage(String errorMessage) {
-            this.errorMessage = errorMessage;
-            return this;
-        }
-
-        public String getErrorMessage() {
-            return errorMessage;
-        }
     }
 }
