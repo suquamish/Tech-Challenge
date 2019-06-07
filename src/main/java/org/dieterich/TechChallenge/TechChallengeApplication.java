@@ -1,4 +1,4 @@
-package org.dieterich.WSECUTechChallenge;
+package org.dieterich.TechChallenge;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

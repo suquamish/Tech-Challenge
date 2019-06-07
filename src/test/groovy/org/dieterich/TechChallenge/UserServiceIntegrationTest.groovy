@@ -1,11 +1,11 @@
-package org.dieterich.WSECUTechChallenge
+package org.dieterich.TechChallenge
 
 
-import org.dieterich.WSECUTechChallenge.DataAccess.UserService
-import org.dieterich.WSECUTechChallenge.DataStorage.MemoryStorage
-import org.dieterich.WSECUTechChallenge.Exceptions.DuplicateUserException
-import org.dieterich.WSECUTechChallenge.Exceptions.NothingFoundException
-import org.dieterich.WSECUTechChallenge.Models.User
+import org.dieterich.TechChallenge.DataAccess.UserService
+import org.dieterich.TechChallenge.DataStorage.MemoryStorage
+import org.dieterich.TechChallenge.Exceptions.DuplicateUserException
+import org.dieterich.TechChallenge.Exceptions.NothingFoundException
+import org.dieterich.TechChallenge.Models.User
 import spock.lang.Specification
 
 class UserServiceIntegrationTest extends Specification {

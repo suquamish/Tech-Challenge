@@ -1,4 +1,4 @@
-package org.dieterich.WSECUTechChallenge.Models;
+package org.dieterich.TechChallenge.Models;
 
 public class User {
     private String id;

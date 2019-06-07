@@ -1,8 +1,8 @@
-package org.dieterich.WSECUTechChallenge
+package org.dieterich.TechChallenge
 
-import org.dieterich.WSECUTechChallenge.DataStorage.MemoryStorage
-import org.dieterich.WSECUTechChallenge.Exceptions.NoCollectionFoundException
-import org.dieterich.WSECUTechChallenge.Models.MemoryStorageModel
+import org.dieterich.TechChallenge.DataStorage.MemoryStorage
+import org.dieterich.TechChallenge.Exceptions.NoCollectionFoundException
+import org.dieterich.TechChallenge.Models.MemoryStorageModel
 import spock.lang.Specification
 
 class MemoryStorageUnitTest extends Specification {

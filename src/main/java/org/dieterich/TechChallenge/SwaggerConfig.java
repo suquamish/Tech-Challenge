@@ -1,4 +1,4 @@
-package org.dieterich.WSECUTechChallenge;
+package org.dieterich.TechChallenge;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +15,7 @@ public class SwaggerConfig {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("org.dieterich.WSECUTechChallenge"))
+                .apis(RequestHandlerSelectors.basePackage("org.dieterich.TechChallenge"))
                 .paths(PathSelectors.any())
                 .build()
                 .useDefaultResponseMessages(false);

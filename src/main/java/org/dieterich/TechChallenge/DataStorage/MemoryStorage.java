@@ -1,7 +1,7 @@
-package org.dieterich.WSECUTechChallenge.DataStorage;
+package org.dieterich.TechChallenge.DataStorage;
 
-import org.dieterich.WSECUTechChallenge.Exceptions.NoCollectionFoundException;
-import org.dieterich.WSECUTechChallenge.Models.MemoryStorageModel;
+import org.dieterich.TechChallenge.Exceptions.NoCollectionFoundException;
+import org.dieterich.TechChallenge.Models.MemoryStorageModel;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;

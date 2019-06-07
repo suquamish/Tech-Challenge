@@ -1,10 +1,10 @@
-package org.dieterich.WSECUTechChallenge.DataAccess;
+package org.dieterich.TechChallenge.DataAccess;
 
-import org.dieterich.WSECUTechChallenge.DataStorage.MemoryStorage;
-import org.dieterich.WSECUTechChallenge.Exceptions.DuplicateUserException;
-import org.dieterich.WSECUTechChallenge.Exceptions.NothingFoundException;
-import org.dieterich.WSECUTechChallenge.Models.MemoryStorageModel;
-import org.dieterich.WSECUTechChallenge.Models.User;
+import org.dieterich.TechChallenge.DataStorage.MemoryStorage;
+import org.dieterich.TechChallenge.Exceptions.DuplicateUserException;
+import org.dieterich.TechChallenge.Exceptions.NothingFoundException;
+import org.dieterich.TechChallenge.Models.MemoryStorageModel;
+import org.dieterich.TechChallenge.Models.User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

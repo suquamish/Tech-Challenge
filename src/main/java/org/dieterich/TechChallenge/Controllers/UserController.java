@@ -1,12 +1,12 @@
-package org.dieterich.WSECUTechChallenge.Controllers;
+package org.dieterich.TechChallenge.Controllers;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.dieterich.WSECUTechChallenge.DataAccess.UserService;
-import org.dieterich.WSECUTechChallenge.Exceptions.DuplicateUserException;
-import org.dieterich.WSECUTechChallenge.Exceptions.NothingFoundException;
-import org.dieterich.WSECUTechChallenge.Models.User;
+import org.dieterich.TechChallenge.DataAccess.UserService;
+import org.dieterich.TechChallenge.Exceptions.DuplicateUserException;
+import org.dieterich.TechChallenge.Exceptions.NothingFoundException;
+import org.dieterich.TechChallenge.Models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

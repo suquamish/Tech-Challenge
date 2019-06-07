@@ -1,4 +1,4 @@
-package org.dieterich.WSECUTechChallenge
+package org.dieterich.TechChallenge
 
 import groovy.json.JsonSlurper
 import org.springframework.boot.SpringApplication
