@@ -21,6 +21,48 @@ public class UserService {
          dataStorage = MemoryStorage.getInstance();
     }
 
+    public User createUser(String username, String name, String email) throws DuplicateUserException {
+        User result;
+        if (usernameExists(username)) throw new DuplicateUserException("${username} already exists");
+        String userId = dataStorage.put(USERNAME_KEY, username).get(0).getGroupId();
+        dataStorage.put(EMAIL_KEY, email, userId);
+        dataStorage.put(NAME_KEY, name, userId);
+        result = new User().setUsername(username).setEmail(email).setName(name).setId(userId);
+        return result;
+    }
+
+    public User getUserById(String groupId) throws NothingFoundException {
+        List<MemoryStorageModel> userInfo = dataStorage.getByGroupId(groupId);
+        if (userInfo.size() > 0) {
+            return userFromMemoryModel(userInfo);
+        }
+        throw (new NothingFoundException(String.format("no user with id \"%s\"", groupId)));
+    }
+
+    public User getUserByUsername(String username) throws NothingFoundException {
+        if(usernameExists(username)) {
+            String userId = dataStorage.getByKeyValue(USERNAME_KEY, username).get(0).getGroupId();
+            return userFromMemoryModel(dataStorage.getByGroupId(userId));
+        }
+        throw new NothingFoundException("${username} does not exist");
+    }
+
+    public void updateUser(User user) throws NothingFoundException, DuplicateUserException {
+        User previousUserData = getUserById(user.getId());
+        String userId = user.getId();
+        validateUpdatedUserData(user);
+
+        if(!user.getUsername().equals(previousUserData.getUsername()))dataStorage.put(USERNAME_KEY, user.getUsername(), userId);
+        if(!user.getName().equals(previousUserData.getName())) dataStorage.put(NAME_KEY, user.getName(), userId);
+        if(!user.getEmail().equals(previousUserData.getEmail())) dataStorage.put(EMAIL_KEY, user.getEmail(), userId);
+    }
+
+    public void deleteUserById(String id) {
+        if (id == null || id.isEmpty()) return;
+
+        dataStorage.deleteByGroupId(id);
+    }
+
     private User userFromMemoryModel(List<MemoryStorageModel> userInfo) {
         User result = new User();
         for(MemoryStorageModel userData : userInfo) {
@@ -45,50 +87,19 @@ public class UserService {
         return userInfo.size() > 0;
     }
 
-    public User getUserById(String groupId) throws NothingFoundException {
-        List<MemoryStorageModel> userInfo = dataStorage.getByGroupId(groupId);
-        if(userInfo.size() > 0) {
-            return userFromMemoryModel(userInfo);
-        }
-        throw(new NothingFoundException(String.format("no user with id \"%s\"", groupId)));
+    private void validateUpdatedUserData(User user) throws DuplicateUserException {
+        validateNoUsernameCollision(user);
+        //validateEmailAddress(user);
+        //validateNoNameForgery(user);
+        //etc(user);
     }
 
-    public User getUserByUsername(String username) throws NothingFoundException {
-        if(usernameExists(username)) {
-            String userId = dataStorage.getByKeyValue(USERNAME_KEY, username).get(0).getGroupId();
-            return userFromMemoryModel(dataStorage.getByGroupId(userId));
-        }
-        throw new NothingFoundException("${username} does not exist");
-    }
-
-    public User createUser(String username, String name, String email) throws DuplicateUserException {
-        User result;
-        if (usernameExists(username)) throw new DuplicateUserException("${username} already exists");
-        String userId = dataStorage.put(USERNAME_KEY, username).get(0).getGroupId();
-        dataStorage.put(EMAIL_KEY, email, userId);
-        dataStorage.put(NAME_KEY, name, userId);
-        result = new User().setUsername(username).setEmail(email).setName(name).setId(userId);
-        return result;
-    }
-
-    public void deleteUserById(String id) {
-        if (id == null || id.isEmpty()) return;
-
-        dataStorage.deleteByGroupId(id);
-    }
-
-    public void updateUser(User user) throws NothingFoundException {
-        User previousUserData = getUserById(user.getId());
-        if (user.getUsername() != previousUserData.getUsername()) {
-            dataStorage.put(USERNAME_KEY, user.getUsername(), user.getId());
-        }
-
-        if(user.getEmail() != previousUserData.getEmail()) {
-            dataStorage.put(EMAIL_KEY, user.getEmail(), user.getId());
-        }
-
-        if(user.getName() != previousUserData.getName()) {
-            dataStorage.put(NAME_KEY, user.getName(), user.getId());
-        }
+    private void validateNoUsernameCollision(User user) throws DuplicateUserException {
+        try {
+            User userByUsername = getUserByUsername(user.getUsername());
+            if (!userByUsername.getId().equals(user.getId())) {
+                throw (new DuplicateUserException("Cannot update user, username already exists"));
+            }
+        } catch(NothingFoundException nfe) {}
     }
 }

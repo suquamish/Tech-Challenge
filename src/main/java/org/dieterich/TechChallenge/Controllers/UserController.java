@@ -54,7 +54,7 @@ public class UserController {
             @ApiResponse(code = 200, message = "OK", response = User.class),
             @ApiResponse(code = 404, message = "Not Found", response = UserError.class )
     })
-    public User updateUser(@RequestBody User userData, @PathVariable String userId) throws NothingFoundException {
+    public User updateUser(@RequestBody User userData, @PathVariable String userId) throws NothingFoundException, DuplicateUserException {
         userData.setId(userId);
         userService.updateUser(userData);
         return userService.getUserById(userData.getId());
@@ -71,7 +71,7 @@ public class UserController {
 
     @ExceptionHandler(NothingFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public UserError handleNotFoundException(NothingFoundException nfe) {
+    public UserError handleNotFoundException() {
         UserError error = new UserError();
         error.setErrorMessage("Cannot find any matching user");
         error.setStatusString("Not Found");
@@ -80,7 +80,7 @@ public class UserController {
 
     @ExceptionHandler(DuplicateUserException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public UserError handleDuplicateUserException(DuplicateUserException nfe) {
+    public UserError handleDuplicateUserException() {
         UserError error = new UserError();
         error.setErrorMessage("User data provided must be unique");
         error.setStatusString("Unable to complete");

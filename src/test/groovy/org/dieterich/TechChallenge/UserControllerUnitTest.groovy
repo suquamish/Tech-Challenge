@@ -2,7 +2,6 @@ package org.dieterich.TechChallenge
 
 import org.dieterich.TechChallenge.Controllers.UserController
 import org.dieterich.TechChallenge.DataAccess.UserService
-import org.dieterich.TechChallenge.Exceptions.DuplicateUserException
 import org.dieterich.TechChallenge.Exceptions.NothingFoundException
 import org.dieterich.TechChallenge.Models.User
 import org.dieterich.TechChallenge.Models.UserError
@@ -69,7 +68,7 @@ class UserControllerUnitTest extends Specification {
 
     def "handleNotFoundException should return an error object that can be rendered nicely"() {
         when:
-        def result = subject.handleNotFoundException(new NothingFoundException("KABOOM!"))
+        def result = subject.handleNotFoundException()
 
         then:
         assert result instanceof UserError
@@ -79,7 +78,7 @@ class UserControllerUnitTest extends Specification {
 
     def "handleDuplicateUserException should return an error object that can be rendered nicely"() {
         when:
-        def result = subject.handleDuplicateUserException(new DuplicateUserException("KABOOM!"))
+        def result = subject.handleDuplicateUserException()
 
         then:
         assert result instanceof UserError
@@ -136,7 +135,7 @@ class UserControllerUnitTest extends Specification {
         }
 
         when:
-        def resultCreate = subject.updateUser(userData, "does not exist")
+        subject.updateUser(userData, "does not exist")
 
         then:
         1 * mockUserService.updateUser(userData) >> { throw(new NothingFoundException("WHAM!")) }

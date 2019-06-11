@@ -154,15 +154,17 @@ class UserServiceUnitTest extends Specification {
 
     def "updateUser stores the new user info"() {
         given:
+        UserService spySubject = Spy(subject)
         def userId = UUID.randomUUID().toString()
         def fakeUserData = new ArrayList<MemoryStorageModel>()
         fakeUserData.add(new MemoryStorageModel(groupId: userId, key: "key", value: "value"))
         _ * mockMemoryStorage.getByGroupId(userId) >> fakeUserData
 
         when:
-        subject.updateUser(new User(id: userId, email: "email", username: "username", name: "name"))
+        spySubject.updateUser(new User(id: userId, email: "email", username: "username", name: "name"))
 
         then:
+        1 * spySubject.getUserByUsername("username") >> new User(id: userId)
         1 * mockMemoryStorage.put("email", "email", userId)
         1 * mockMemoryStorage.put("username", "username", userId)
         1 * mockMemoryStorage.put("name", "name", userId)
@@ -177,6 +179,7 @@ class UserServiceUnitTest extends Specification {
         fakeUserData.add(new MemoryStorageModel(groupId: userId, key: "username", value: username))
         fakeUserData.add(new MemoryStorageModel(groupId: userId, key: "name", value: name))
         _ * mockMemoryStorage.getByGroupId(userId) >> fakeUserData
+        _ * mockMemoryStorage.getByKeyValue("username", "username") >> fakeUserData
 
         when:
         subject.updateUser(new User(id: userId, email: "email", username: "username", name: "name"))
@@ -193,5 +196,24 @@ class UserServiceUnitTest extends Specification {
         "email"     | "different" | "username"  | 0              | 1             | 0
         "email"     | "name"      | "different" | 0              | 0             | 1
         "different" | "different" | "different" | 1              | 1             | 1
+    }
+
+    def "updating a user validates an updated username does not collide an existing username"() {
+        given:
+        UserService spySubject = Spy(subject)
+        List<MemoryStorageModel> fakeUsernameCheck = new ArrayList<MemoryStorageModel>()
+        fakeUsernameCheck.add(new MemoryStorageModel(groupId: "whatever", key: "username", value: "username"))
+        User userToUpdate = new User(id: UUID.randomUUID().toString(), username: "username")
+        List<MemoryStorageModel> userToUpdateMemoryModels = new ArrayList<>(2)
+        userToUpdateMemoryModels.add(new MemoryStorageModel(groupId:  userToUpdate.id, key: "username", value: "old value"))
+
+        when:
+        spySubject.updateUser(userToUpdate)
+
+        then:
+        1 * mockMemoryStorage.getByGroupId(userToUpdate.id) >> userToUpdateMemoryModels
+        1 * spySubject.getUserByUsername("username") >> new User(id: UUID.randomUUID().toString())
+        DuplicateUserException due = thrown(DuplicateUserException)
+        assert due.message == "Cannot update user, username already exists"
     }
 }
