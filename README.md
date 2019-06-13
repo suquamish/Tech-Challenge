@@ -14,8 +14,9 @@ The solution [must] be able to meet the following needs:
    - Update a user's email and name
    
 You have 24 hours... Go!
-   
-## Instructions
+___
+
+# Solution
 
 This project is Gradle based, with a wrapper.  From your desktop, you should be able to compile, test, and run this project.
 _(all instructions are assuming a Linux commandline)_
@@ -26,9 +27,9 @@ From the project root:
 ```
 $ ./gradlew clean build
 ```
-`gradlew.bat` is used for Windows.
+*`gradlew.bat` is used for Windows.*
 
-This will downlownd all necessary components of Gradle to run the tasks. By default the `build` task runs the entire test suite. You should see something like:
+`gradlew` will downlownd all necessary components of Gradle to run the build tasks. By default the `build` task runs the entire test suite. You should see something like:
 
 ```
 BUILD SUCCESSFUL in 15s
@@ -40,12 +41,39 @@ BUILD SUCCESSFUL in 15s
 After building (see above), starting the server from the project root is as simple as:
 
 ```
-java -jar build/libs/WSECUTechChallenge-0.0.1.jar
+java -jar build/libs/TechChallenge-0.0.1.jar
 ```
+
+If everything goes according to plan, you should see something like:
+```json
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.1.5.RELEASE)
+
+2019-06-12 16:28:14.655  INFO 9972 --- [           main] o.d.T.TechChallengeApplication           : Starting TechChallengeApplication on miu with PID 9972 (/home/thom/Development/tech_challenge/build/libs/TechChallenge-0.0.1.jar started by thom in /home/thom/Development/tech_challenge)
+2019-06-12 16:28:14.659  INFO 9972 --- [           main] o.d.T.TechChallengeApplication           : No active profile set, falling back to default profiles: default
+2019-06-12 16:28:16.247  INFO 9972 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2019-06-12 16:28:16.288  INFO 9972 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2019-06-12 16:28:16.289  INFO 9972 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.19]
+2019-06-12 16:28:16.392  INFO 9972 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2019-06-12 16:28:16.392  INFO 9972 --- [           main] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 1683 ms
+2019-06-12 16:28:16.830  INFO 9972 --- [           main] pertySourcedRequestMappingHandlerMapping : Mapped URL path [/v2/api-docs] onto method [public org.springframework.http.ResponseEntity<springfox.documentation.spring.web.json.Json> springfox.documentation.swagger2.web.Swagger2Controller.getDocumentation(java.lang.String,javax.servlet.http.HttpServletRequest)]
+2019-06-12 16:28:16.964  INFO 9972 --- [           main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2019-06-12 16:28:17.328  INFO 9972 --- [           main] d.s.w.p.DocumentationPluginsBootstrapper : Context refreshed
+2019-06-12 16:28:17.355  INFO 9972 --- [           main] d.s.w.p.DocumentationPluginsBootstrapper : Found 1 custom documentation plugin(s)
+2019-06-12 16:28:17.398  INFO 9972 --- [           main] s.d.s.w.s.ApiListingReferenceScanner     : Scanning for api listing references
+2019-06-12 16:28:17.613  INFO 9972 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2019-06-12 16:28:17.617  INFO 9972 --- [           main] o.d.T.TechChallengeApplication           : Started TechChallengeApplication in 3.324 seconds (JVM running for 3.746)
+```
+The last two lines being markers of a successful startup.
 
 ### Making requests to the application
 
-**Swagger** documentation is provided at http://localhost:8080/swagger-ui.html
+`springfox-swagger` documentation is provided, assuming defaults, at http://localhost:8080/swagger-ui.html
 
 The root path for getting and setting user data is `/users`
 
@@ -176,4 +204,4 @@ I opted for in memory *persistence* option, so each time you restart the service
 
 The server retains it's default port of 8080 to bind to. If you've got something else running on that port you'll need change the server port by setting a server.port property:
 
-`java -jar -Dserver.port=8081 build/libs/WSECUTechChallenge-0.0.1.jar`
+`java -jar -Dserver.port=8081 build/libs/TechChallenge-0.0.1.jar`
